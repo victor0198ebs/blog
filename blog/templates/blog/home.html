@@ -1,43 +1,49 @@
 {% extends "blog/base.html" %}
 
 {% block content %}
-    {% for post in posts %}
-        <article class="media content-section">
-            <img class="rounded-circle article-img" src="{{ post.author.profile.image.url }}">
-            <div class="media-body">
-                <div class="article-metadata">
-                    <a class="mr-2" href="{% url 'user-posts' post.author.username %}">{{ post.author }}</a>
-                    <small class="text-muted">{{ post.date_posted|date:"F d, Y" }}</small>
+    {% if user.is_authenticated %}
+        {% for post in posts %}
+            <article class="media content-section">
+                <img class="rounded-circle article-img" src="{{ post.author.profile.image.url }}">
+                <div class="media-body">
+                    <div class="article-metadata">
+                        <a class="mr-2" href="{% url 'user-posts' post.author.username %}">{{ post.author }}</a>
+                        <small class="text-muted">{{ post.date_posted|date:"F d, Y" }}</small>
+                    </div>
+                    <h2><a class="article-title" href="{% url 'post-detail' post.id %}">{{ post.title }}</a></h2>
+                    <p class="article-content">{{ post.content }}</p>
+                    <div style="display: inline-block;float: right;margin-left: 10px">
+                        <p style="font-size:20px;color:red;display: inline-block">
+                            Dislikes:
+                        </p>
+                        <span id="liked" style="font-size:20px;color:red;display: inline-block">
+                            {% for key, value in dislikesDict.items %}
+                                {% if key == post.id %}
+                                    {{ value }}
+                                {% endif %}
+                            {% endfor %}
+                        </span>
+                    </div>
+                    <div style="display: inline-block;float: right;">
+                        <p style="font-size:20px;color:darkgreen;display: inline-block">
+                            Likes:
+                        </p>
+                        <span id="liked" style="font-size:20px;color:darkgreen;display: inline-block">
+                            {% for key, value in likesDict.items %}
+                                {% if key == post.id %}
+                                    {{ value }}
+                                {% endif %}
+                            {% endfor %}
+                        </span>
+                    </div>
                 </div>
-                <h2><a class="article-title" href="{% url 'post-detail' post.id %}">{{ post.title }}</a></h2>
-                <p class="article-content">{{ post.content }}</p>
-                <div style="display: inline-block;float: right;margin-left: 10px">
-                    <p style="font-size:20px;color:red;display: inline-block">
-                        Dislikes:
-                    </p>
-                    <span id="liked" style="font-size:20px;color:red;display: inline-block">
-                        {% for key, value in dislikesDict.items %}
-                            {% if key == post.id %}
-                                {{ value }}
-                            {% endif %}
-                        {% endfor %}
-                    </span>
-                </div>
-                <div style="display: inline-block;float: right;">
-                    <p style="font-size:20px;color:darkgreen;display: inline-block">
-                        Likes:
-                    </p>
-                    <span id="liked" style="font-size:20px;color:darkgreen;display: inline-block">
-                        {% for key, value in likesDict.items %}
-                            {% if key == post.id %}
-                                {{ value }}
-                            {% endif %}
-                        {% endfor %}
-                    </span>
-                </div>
-            </div>
-        </article>
-    {% endfor %}
+            </article>
+        {% endfor %}
+    {% else %}
+        <div style="text-align: center;margin-top: 40px;">
+            <h2>Please <a href="{% url 'login' %}">login</a> first!</h2>
+        </div>
+    {% endif %}
     {% if is_paginated %}
 
         {% if page_obj.has_previous %}
